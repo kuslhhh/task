@@ -12,7 +12,6 @@ export default function Home() {
         direction="horizontal"
       >
         <ResizablePanel>
-
           <ResizablePanelGroup direction="vertical">
             <ResizablePanel>
               <div className="h-full flex-col justify-center p-6 space-y-4">
@@ -27,7 +26,6 @@ export default function Home() {
             <ResizablePanel>
               Chart
             </ResizablePanel>
-
           </ResizablePanelGroup>
         </ResizablePanel>
         <ResizableHandle withHandle />

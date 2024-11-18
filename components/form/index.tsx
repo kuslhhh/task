@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Form as FormComp, FormControl, FormField, FormItem, FormMessage } from '../ui/form'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from 'react-hook-form'
@@ -11,15 +11,25 @@ import StatusBullet from '../StatusBullet'
 import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import {IoAddOutline} from "react-icons/io5"
+import {VscLoading} from "react-icons/vsc"
+import { createTask } from '@/services/task'
 
 export default function Form() {
     const form = useForm({
         resolver: zodResolver(formSchema),
     })
 
+    const [isLoading, setIsLoading] = useState(false)
+
+    const onSubmit = async (data: formSchema) => {
+        setIsLoading(true)
+        createTask(data)
+        setIsLoading(false)
+    }
+    
     return (
         <FormComp {...form}>
-            <form className='space-y-2'>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
                 <div className='flex items-center gap-3'>
                     <FormField
                         control={form.control}
@@ -61,7 +71,7 @@ export default function Form() {
                             </FormItem>
                         )}
                     />
-                    <Button type='submit' icon={<IoAddOutline/>}>Add Task</Button>
+                    <Button type='submit' icon={ isLoading ? <VscLoading className='animate-spin'/> : <IoAddOutline/>}>Add Task</Button>
                 </div> 
                 <FormField
                     control={form.control}
