@@ -24,28 +24,29 @@ import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import { IoAddOutline } from 'react-icons/io5'
 import { VscLoading } from 'react-icons/vsc'
-import { createTask } from '@/services/task'
+import { createTask, deleteTask, updateTask } from '@/services/task'
 import { useToast } from '@/hooks/use-toast'
 import { Task } from '@prisma/client'
 
 type Props = {
   task?: Task
+  onSubmitOrDelete?: () => void
 }
-export default function Form (props: Props) {
-  const { task } = props
+export default function Form(props: Props) {
+  const { task, onSubmitOrDelete } = props
   const isEditing = !!task
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: isEditing
       ? {
-          title: task.title,
-          description: task.description,
-          status: task.status as TaskStatus
-        }
+        title: task.title,
+        description: task.description,
+        status: task.status as TaskStatus
+      }
       : {
-          status: 'starting'
-        }
+        status: 'starting'
+      }
   })
 
   const { toast } = useToast()
@@ -55,15 +56,34 @@ export default function Form (props: Props) {
   const onSubmit = async (data: FormData) => {
     setIsLoading(true)
     try {
-      await createTask(data) // Ensure the async function is awaited
+      if(!isEditing) {
+        await createTask(data) // Ensure the async function is awaited
+      } else {
+        const newTask = {
+          id: task.id,
+          createdAt: task.createdAt,
+          description: data.description || "",
+          status: data.status,
+          title: data.title,
+        } as Task
+      }
+      await updateTask()
+
     } catch (error) {
       console.error('Error creating task:', error)
     } finally {
-      setIsLoading(false) // Always stop loading, even if there's an error
+      setIsLoading(false) 
     }
     toast({
-      title: 'Your new task was created successfully!'
+      title: isEditing? 'Your new task was created successfully!' : 'Your new task was created successfully!'
     })
+    onSubmitOrDelete?.()
+  }
+
+  const onDelete = async () => {
+    if(!task?.id) return
+    await deleteTask(task?.id) 
+    onSubmitOrDelete?.()
   }
 
   return (
@@ -144,6 +164,12 @@ export default function Form (props: Props) {
             </FormItem>
           )}
         />
+        {isEditing ? (
+          <div className='flex items-center gap-2'>
+            <Button type='submit' disabled={isLoading}>Save Changes</Button>
+            <Button variant="destructive" disabled={isLoading} onClick={onDelete}>Delete</Button>
+          </div>
+        ) : null}
       </form>
     </FormComp>
   )

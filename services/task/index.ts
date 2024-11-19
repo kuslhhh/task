@@ -2,7 +2,12 @@
 
 import formSchema from "@/components/form/schema";
 import prisma from "@/lib/prisma";
+import { Task } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+
+function revalidateData(){
+    revalidatePath("/", "layout")
+}
 
 export async function createTask(task: formSchema){
     await prisma.task.create({
@@ -12,7 +17,7 @@ export async function createTask(task: formSchema){
             title: task.title
         }
     })
-    revalidatePath("/", "layout")
+    revalidateData()
 }
 
 export async function getTasks() {
@@ -22,4 +27,19 @@ export async function getTasks() {
         }
     })
     return tasks
+}
+
+export async function deleteTask(id: string) {
+    await prisma.task.delete({
+        where: {id}
+    })
+    revalidateData()
+}
+
+export async function updateTask(task: Task) {
+    await prisma.task.update({
+        where: {id: task.id},
+        data: task
+    })
+    revalidateData()
 }

@@ -23,7 +23,7 @@ export default function TitleCell(props: Props) {
         </span>
         <Modal title='Task Details' isOpen={isOpen} close={close}>
             <div className='min-w-[500px]'>
-                <Form task={task}/> 
+                <Form task={task} onSubmitOrDelete={close}/> 
             </div>
         </Modal>
     </>
