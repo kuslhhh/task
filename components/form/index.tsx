@@ -53,32 +53,31 @@ export default function Form(props: Props) {
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const onSubmit = async (data: FormData) => {
-    setIsLoading(true)
-    try {
-      if(!isEditing) {
-        await createTask(data) // Ensure the async function is awaited
-      } else {
-        const newTask = {
-          id: task.id,
-          createdAt: task.createdAt,
-          description: data.description || "",
-          status: data.status,
-          title: data.title,
-        } as Task
-      }
-      await updateTask()
-
-    } catch (error) {
-      console.error('Error creating task:', error)
-    } finally {
-      setIsLoading(false) 
+  const onSubmit = async (data: formschema) => {
+    setIsLoading(true);
+    if (!isEditing) {
+      await createTask({
+        ...data,
+        description: data?.description || "",
+      });
+    } else {
+      const newTask = {
+        id: task.id,
+        createdAt: task.createdAt,
+        description: data.description || "",
+        status: data.status,
+        title: data.title,
+      } as Task;
+      await updateTask(newTask);
     }
+    setIsLoading(false);
     toast({
-      title: isEditing? 'Your new task was created successfully!' : 'Your new task was created successfully!'
-    })
-    onSubmitOrDelete?.()
-  }
+      title: isEditing
+        ? "Your task was edited successfully!"
+        : "Your new task was created successfully!",
+    });
+    onSubmitOrDelete?.();
+  };
 
   const onDelete = async () => {
     if(!task?.id) return
