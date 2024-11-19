@@ -43,3 +43,14 @@ export async function updateTask(task: Task) {
     })
     revalidateData()
 }
+
+export async function getTaskCountByStatus() {
+    
+    const [starting, progress, done] = await Promise.all([
+        prisma.task.count({where: {status: "starting"}}),
+        prisma.task.count({where: {status: "progress"}}),
+        prisma.task.count({where: {status: "done"}})
+    ])
+
+    return {starting, progress, done}
+}

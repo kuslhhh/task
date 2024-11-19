@@ -1,3 +1,4 @@
+import Chart from "@/components/chart";
 import Form from "@/components/form";
 import Navbar from "@/components/navbar";
 import TaskList from "@/components/taskList";
@@ -24,8 +25,8 @@ export default function Home() {
               </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
-            <ResizablePanel>
-              Chart
+            <ResizablePanel className="min-h-[30vh] h-full ">
+              <Chart/>
             </ResizablePanel>
           </ResizablePanelGroup>
         </ResizablePanel>
