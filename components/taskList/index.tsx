@@ -29,16 +29,18 @@ export default async function TaskList() {
             <Table className='h-full w-full'>
                 <TableCaption>{"A List of Your Tasks"}</TableCaption>
                 <TableHeader>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Status</TableHead>
+                    </TableRow>
                 </TableHeader>
                 <TableBody>
                     {tasks.map((task) => (
                         <TableRow key={task.id} className='group'>
                             <TableCell className='font-medium'>{getDate(task.createdAt)}</TableCell>
                             <TableCell className='font-medium'>
-                                <TitleCell task={task}/>
+                                <TitleCell task={task} />
                             </TableCell>
                             <TableCell className='capitalize'>
                                 <StatusBullet status={task.status as TaskStatus} />

@@ -3,6 +3,7 @@ import TeamSwitcher from './team-switcher'
 import Links from './links'
 import Search from './search'
 import Avatar from './avatar'
+import Logout from './logout'
 
 export default function Navbar() {
   return (
@@ -11,9 +12,10 @@ export default function Navbar() {
             <TeamSwitcher/>
             <Links/>
         </div>
-        <div className='flex items-center gap-12'>
+        <div className='flex items-center gap-4'>
           <Search/>
           <Avatar/>
+          <Logout/>
         </div>
 
     </nav>
