@@ -7,7 +7,7 @@ import Logout from './logout'
 
 export default function Navbar() {
   return (
-    <nav className='flex justify-between items-center px-4 py-2'>
+    <nav className='flex justify-between items-center px-4 py-2 border-b'>
         <div className='flex items-center gap-12 '>
             <TeamSwitcher/>
             <Links/>

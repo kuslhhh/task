@@ -5,13 +5,13 @@ import prisma from "@/lib/prisma";
 import { Task } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-function revalidateData(){
+function revalidateData() {
     revalidatePath("/", "layout")
 }
 
-export async function createTask(task: formSchema){
+export async function createTask(task: formSchema) {
     await prisma.task.create({
-        data :{
+        data: {
             description: task.description || "",
             status: task.status,
             title: task.title
@@ -31,26 +31,26 @@ export async function getTasks() {
 
 export async function deleteTask(id: string) {
     await prisma.task.delete({
-        where: {id}
+        where: { id }
     })
     revalidateData()
 }
 
 export async function updateTask(task: Task) {
     await prisma.task.update({
-        where: {id: task.id},
+        where: { id: task.id },
         data: task
     })
     revalidateData()
 }
 
 export async function getTaskCountByStatus() {
-    
+
     const [starting, progress, done] = await Promise.all([
-        prisma.task.count({where: {status: "starting"}}),
-        prisma.task.count({where: {status: "progress"}}),
-        prisma.task.count({where: {status: "done"}})
+        prisma.task.count({ where: { status: "starting" } }),
+        prisma.task.count({ where: { status: "progress" } }),
+        prisma.task.count({ where: { status: "done" } })
     ])
 
-    return {starting, progress, done}
+    return { starting, progress, done }
 }
