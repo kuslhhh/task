@@ -32,7 +32,7 @@ export default function RootLayout({
       >
         <ProvidersWrapper>
           <Navbar />
-          <div className="h-screen flex flex-col justify-between">
+          <div className="h-screen flex flex-col justify-between ">
             {children}
           </div>
         </ProvidersWrapper>
