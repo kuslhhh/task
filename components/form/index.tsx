@@ -64,7 +64,7 @@ export default function Form(props: Props) {
       const newTask = {
         id: task.id,
         createdAt: task.createdAt,
-        description: data.description || "",
+        description: data.description || " ",
         status: data.status,
         title: data.title,
       } as Task;
