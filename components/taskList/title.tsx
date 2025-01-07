@@ -9,7 +9,7 @@ type props = {
     task: Task
 }
 
-export default function TitleCell(props: Props) {
+export default function TitleCell(props: props) {
 
     const {task} = props
     const [isOpen, setIsOpen] = useState(false)
