@@ -12,7 +12,7 @@ type Props = {
 export default function Modal(props: Props) {
   const { isOpen, title, close, children } = props;
   const modalRef = useRef<HTMLDivElement | null>(null);
-  const onScreenClick = (e: any) => {
+  const onScreenClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const dimentions = modalRef.current?.getBoundingClientRect()
     if(!dimentions) return  
     if(
