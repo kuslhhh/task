@@ -1,70 +1,72 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
+import React, { useState } from "react";
+import { VscLoading } from "react-icons/vsc";
 import {
   Form as FormComp,
   FormControl,
   FormField,
   FormItem,
-  FormMessage
-} from '../ui/form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import formSchema, { TaskStatus } from './schema'
-import { Input } from '../ui/input'
+  FormMessage,
+} from "../ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import formSchema, { FormSchema, TaskStatus } from "./schema";
+import { Input } from "../ui/input";
 import {
   Select,
-  SelectTrigger,
   SelectContent,
+  SelectValue,
+  SelectTrigger,
   SelectItem,
-  SelectValue
-} from '../ui/select'
-import StatusBullet from '../StatusBullet'
-import { Textarea } from '../ui/textarea'
-import { Button } from '../ui/button'
-import { IoAddOutline } from 'react-icons/io5'
-import { VscLoading } from 'react-icons/vsc'
-import { createTask, deleteTask, updateTask } from '@/services/task'
-import { useToast } from '@/hooks/use-toast'
-import { Task } from '@prisma/client'
-
+} from "../ui/select";
+import StatusBullet from "../StatusBullet";
+import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
+import { IoAddOutline } from "react-icons/io5";
+import { createTask, deleteTask, updateTask } from "@/services/task";
+import { useToast } from "@/hooks/use-toast";
+import { Task } from "@prisma/client";
+import { authClient } from "@/lib/auth-client";
 type Props = {
-  task?: Task
-  onSubmitOrDelete?: () => void
-}
-export default function Form(props: Props) {
-  const { task, onSubmitOrDelete } = props
-  const isEditing = !!task
+  task?: Task;
+  onSubmitOrDelete?: () => void;
+  defaultDate?: Date
+};
 
+export default function Form(props: Props) {
+  const { task, onSubmitOrDelete, defaultDate } = props;
+  const isEditing = !!task;
+  const { data: session, isPending } = authClient.useSession();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: isEditing
       ? {
-        title: task.title,
-        description: task.description,
-        status: task.status as TaskStatus
-      }
+          title: task.title,
+          description: task.description,
+          status: task.status as TaskStatus,
+        }
       : {
-        status: 'starting'
-      }
-  })
-
-  const { toast } = useToast()
-
-  const [isLoading, setIsLoading] = useState(false)
-
-  const onSubmit = async (data: formschema) => {
+          status: "starting",
+        },
+  });
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const onSubmit = async (data: FormSchema) => {
     setIsLoading(true);
+    const ownerId = session.user.id;
     if (!isEditing) {
       await createTask({
         ...data,
+        ownerId,
         description: data?.description || "",
+        createdAt: defaultDate
       });
     } else {
       const newTask = {
         id: task.id,
         createdAt: task.createdAt,
-        description: data.description || " ",
+        description: data.description || "",
         status: data.status,
         title: data.title,
       } as Task;
@@ -80,33 +82,31 @@ export default function Form(props: Props) {
   };
 
   const onDelete = async () => {
-    if(!task?.id) return
-    await deleteTask(task?.id) 
-    onSubmitOrDelete?.()
-  }
-
+    if (!task?.id) return;
+    await deleteTask(task.id);
+    onSubmitOrDelete?.();
+  };
   return (
     <FormComp {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
-        <div className='flex items-center gap-3'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+        <div className="flex items-center gap-3">
           <FormField
             control={form.control}
-            name='title'
+            name="title"
             render={({ field }) => (
-              <FormItem className='grow'>
+              <FormItem className="grow">
                 <FormMessage />
                 <FormControl>
-                  <Input placeholder='what do you have to do?' {...field} />
+                  <Input placeholder="What do you have to do?" {...field} />
                 </FormControl>
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
-            name='status'
+            name="status"
             render={({ field }) => (
-              <FormItem className='grow'>
+              <FormItem className="grow">
                 <FormMessage />
                 <Select
                   onValueChange={field.onChange}
@@ -114,18 +114,18 @@ export default function Form(props: Props) {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder='Status' />
+                      <SelectValue placeholder="Status" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value='starting'>
-                      <StatusBullet status='starting' />
+                    <SelectItem value="starting">
+                      <StatusBullet status="starting" />
                     </SelectItem>
-                    <SelectItem value='progress'>
-                      <StatusBullet status='progress' />
+                    <SelectItem value="progress">
+                      <StatusBullet status="progress" />
                     </SelectItem>
-                    <SelectItem value='done'>
-                      <StatusBullet status='done' />
+                    <SelectItem value="done">
+                      <StatusBullet status="done" />
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -134,14 +134,15 @@ export default function Form(props: Props) {
           />
           {isEditing ? null : (
             <Button
-              type='submit'
+              type="submit"
               icon={
                 isLoading ? (
-                  <VscLoading className='animate-spin' />
+                  <VscLoading className="animate-spin" />
                 ) : (
                   <IoAddOutline />
                 )
               }
+              disabled={isPending || isLoading}
             >
               Add Task
             </Button>
@@ -149,14 +150,14 @@ export default function Form(props: Props) {
         </div>
         <FormField
           control={form.control}
-          name='description'
+          name="description"
           render={({ field }) => (
             <FormItem>
               <FormMessage />
               <FormControl>
                 <Textarea
-                  placeholder='Give more information about the task'
-                  className='resize-none'
+                  placeholder="Give more information about the task"
+                  className="resize-none"
                   {...field}
                 />
               </FormControl>
@@ -164,12 +165,20 @@ export default function Form(props: Props) {
           )}
         />
         {isEditing ? (
-          <div className='flex items-center gap-2'>
-            <Button type='submit' disabled={isLoading}>Save Changes</Button>
-            <Button variant="destructive" disabled={isLoading} onClick={onDelete}>Delete</Button>
+          <div className="flex items-center gap-2">
+            <Button type="submit" disabled={isPending || isLoading}>
+              Save Changes
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={onDelete}
+              disabled={isPending || isLoading}
+            >
+              Delete
+            </Button>
           </div>
         ) : null}
       </form>
     </FormComp>
-  )
+  );
 }
