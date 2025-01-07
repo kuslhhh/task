@@ -8,8 +8,36 @@
   }
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 0.1rem;
+}
 
+/* Track */
+::-webkit-scrollbar-track {
+  background: hsl(229, 84%, 5%);
+}
 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: hsl(283, 78%, 9%);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(0, 100%, 50%);
+}
+
+::-moz-selection {
+  /* Code for Firefox */
+  color: #050c0f;
+  background: hsla(195, 69%, 90%, 0.5);
+}
+
+::selection {
+  color: #050c0f;
+  background: hsla(195, 69%, 90%, 0.5);
+}
 
 * {
   padding: 0;
