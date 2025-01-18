@@ -11,6 +11,7 @@ export default function ProvidersWrapper({ children }: Props) {
   return (
     <>
       <Toaster />
+      {/*   Added toaster for alerts  */}
       {children}
     </>
   )
